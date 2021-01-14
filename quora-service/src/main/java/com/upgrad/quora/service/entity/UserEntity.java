@@ -5,8 +5,17 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
+/**
+ * This is the Entity class for the User
+ */
 @Entity
 @Table(name = "users")
+@NamedQueries({
+        @NamedQuery(name = "getUserByUserName", query = "select u from UserEntity u where u.userName = :userName"),
+        @NamedQuery(name = "getUserByUuid", query = "select u from UserEntity u where u.uuid = :uuid"),
+        @NamedQuery(name = "getUserByEmail", query = "select u from UserEntity u where u.email = :email"),
+        @NamedQuery(name = "deleteUserById", query = "delete UserEntity u where u.uuid = :uuid")
+})
 public class UserEntity implements Serializable {
 
     @Id
