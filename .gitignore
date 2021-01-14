@@ -6,6 +6,7 @@
 *.sw?
 *~
 .#*
+.idea
 .*.md.html
 .DS_Store
 .attach_pid*
