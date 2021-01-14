@@ -49,6 +49,14 @@ public class UserBusinessService {
         return signupUser;
     }
 
+    /**
+     * This method checks the username and password to sign in a valid user or reply with appropriate
+     * message
+     * @param username username of the user
+     * @param password password of the user
+     * @return User details on success or appropriate error message
+     * @throws AuthenticationFailedException
+     */
     @Transactional
     public UserAuthEntity signin(final String username, final String password) throws AuthenticationFailedException {
         UserEntity userEntity = userDao.getUserByUserName(username);

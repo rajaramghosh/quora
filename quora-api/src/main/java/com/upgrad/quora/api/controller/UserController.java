@@ -67,6 +67,26 @@ public class UserController {
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * The "/user/signin" endpoint is used for user authentication. The user authenticates in the application and after
+     * successful authentication, JWT token is given to a user.
+     * It is a POST request for the User credentials to be passed in the authorization field of header as part of
+     * Basic authentication, "Basic username:password" (where username:password of the String is encoded
+     * to Base64 format) in the authorization header.
+     * If the username provided by the user does not exist, throw "AuthenticationFailedException" with the message code
+     * -'ATH-001' and message-'This username does not exist'.
+     * If the password provided by the user does not match the password in the existing database,
+     * throw 'AuthenticationFailedException' with the message code -'ATH-002' and message -'Password failed'.
+     * If the credentials provided by the user match the details in the database, save the user login information in the
+     * database and return the 'uuid' of the authenticated user from 'users' table and message 'SIGNED IN SUCCESSFULLY' in
+     * the JSON response with the corresponding HTTP status. Note that 'JwtAccessToken' class has been given in the stub file
+     * to generate an access token.
+     * Also, return the access token in the access_token field of the Response Header, which will be used by the user for
+     * any further operation in the Quora Application.
+     * @param authorization authorization details
+     * @return signin response with appropriate message
+     * @throws AuthenticationFailedException
+     */
     @RequestMapping(method = RequestMethod.POST, path = "signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
         byte[] decoded = Base64.getDecoder().decode(authorization.split(" ")[1]);
