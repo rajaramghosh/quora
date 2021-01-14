@@ -1,12 +1,16 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.UserDao;
+import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
+import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 /**
  * This class implement all the business services for the User
@@ -43,5 +47,36 @@ public class UserBusinessService {
         UserEntity signupUser = userDao.createUser(userEntity);
 
         return signupUser;
+    }
+
+    @Transactional
+    public UserAuthEntity signin(final String username, final String password) throws AuthenticationFailedException {
+        UserEntity userEntity = userDao.getUserByUserName(username);
+
+        if(userEntity == null) {
+            throw new AuthenticationFailedException("ATH-001", "This username does not exist");
+        }
+
+        final String encryptedPassword = cryptographyProvider.encrypt(password, userEntity.getSalt());
+        if(encryptedPassword.equals(userEntity.getPassword())) {
+            JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
+            UserAuthEntity userAuthEntity = new UserAuthEntity();
+
+            final ZonedDateTime now = ZonedDateTime.now();
+            final ZonedDateTime expiresAt = now.plusHours(8);
+
+            userAuthEntity.setUuid(UUID.randomUUID().toString());
+            userAuthEntity.setUserId(userEntity);
+            userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(userEntity.getUuid(), now, expiresAt));
+            userAuthEntity.setExpiresAt(expiresAt);
+            userAuthEntity.setLoginAt(now);
+
+            userDao.createAuth(userAuthEntity);
+
+            return userAuthEntity;
+        } else {
+            throw new AuthenticationFailedException("ATH-002", "Password failed");
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.dao;
 
+import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
@@ -45,7 +46,7 @@ public class UserDao {
 
     /**
      * This method checks if the email already exist in the database
-     * @param email emil that need to be checked
+     * @param email email that need to be checked
      * @return true/false
      */
     public Boolean isEmailExists(final String email) {
@@ -55,5 +56,28 @@ public class UserDao {
         } catch (NoResultException nre) {
             return false;
         }
+    }
+
+    /**
+     * This method check if a user with the given userName is resent in the Database
+     * @param userName user name to be found
+     * @return null if not found or returns the User Details
+     */
+    public UserEntity getUserByUserName(final String userName) {
+        try {
+            return entityManager.createNamedQuery("getUserByUserName", UserEntity.class).setParameter("userName", userName).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * This method insert the user authentication data in the database
+     * @param userAuthEntity user authentication data
+     * @return user authentication data
+     */
+    public UserAuthEntity createAuth(final UserAuthEntity userAuthEntity) {
+        entityManager.persist(userAuthEntity);
+        return userAuthEntity;
     }
 }
