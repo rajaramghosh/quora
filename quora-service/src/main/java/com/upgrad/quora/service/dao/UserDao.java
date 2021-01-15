@@ -110,4 +110,17 @@ public class UserDao {
                 .setParameter("logoutAt", logoutAt)
                 .executeUpdate();
     }
+
+    /**
+     * This method retrieves user details from the database based on the UUID
+     * @param uuid UUID of the User
+     * @return User Details
+     */
+    public UserEntity getUserById(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("getUserByUuid", UserEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }
