@@ -1,25 +1,51 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.QuestionDeleteResponse;
-import com.upgrad.quora.api.model.QuestionDetailsResponse;
-import com.upgrad.quora.api.model.QuestionEditRequest;
-import com.upgrad.quora.api.model.QuestionRequest;
+import com.upgrad.quora.api.model.*;
+import com.upgrad.quora.service.business.QuestionBusinessService;
+import com.upgrad.quora.service.dao.UserDao;
+import com.upgrad.quora.service.entity.QuestionEntity;
+import com.upgrad.quora.service.entity.UserAuthEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/question")
 public class QuestionController
 {
 
+    @Autowired
+    private QuestionBusinessService questionBusinessService;
+
+    @Autowired
+    private UserDao userDao;
+
     //Method to create questions in the application and uses POST request method
     @RequestMapping(method = RequestMethod.POST, path = "create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionRequest> createQuestion(final QuestionRequest questionRequest) {
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest, @RequestHeader("authorization") final String authorization) {
+
+       UserAuthEntity user = userDao.getUserAuthByToken(authorization);
+        final QuestionEntity questionEntity = new QuestionEntity();
+
+        questionEntity.setUuid(UUID.randomUUID().toString());
+        questionEntity.setContent(questionRequest.getContent());
+        questionEntity.setDate(ZonedDateTime.now());
+        questionEntity.setUser_id(user.getUserId());
+
+        final QuestionEntity createdQuestionEntity = questionBusinessService.create(questionEntity);
+
+        QuestionResponse questionResponse = new QuestionResponse().id(createdQuestionEntity.getUuid()).status("QUESTION CREATED");
+
+        return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.CREATED);
+
     }
 
     //Method to view all questions in the application and uses GET request method
