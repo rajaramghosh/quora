@@ -2,6 +2,7 @@ package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.entity.QuestionEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,10 @@ public class QuestionBusinessService {
         return questionDao.getAllQuestions();
     }
 
+    public List<QuestionEntity> getAllQuestionsByUser(final UserEntity userId) {
+        List<QuestionEntity> questionsList = questionDao.getAllQuestionsByUser(userId);
+
+        return questionsList;
+    }
 
 }

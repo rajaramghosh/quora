@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="47a15d9d-c79e-46a9-bbbf-df38ac55657d" name="Default Changelist" comment="Implemented deleteQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService">
+    <list default="true" id="47a15d9d-c79e-46a9-bbbf-df38ac55657d" name="Default Changelist" comment="Implemented editQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/quora-api/src/main/java/com/upgrad/quora/api/controller/QuestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/quora-api/src/main/java/com/upgrad/quora/api/controller/QuestionController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/business/QuestionBusinessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/business/QuestionBusinessService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/business/UserBusinessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/business/UserBusinessService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/dao/QuestionDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/dao/QuestionDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/entity/QuestionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/quora-service/src/main/java/com/upgrad/quora/service/entity/QuestionEntity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -365,6 +365,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538752844056" />
+    <property name="extract.method.default.visibility" value="private" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../quora_stub (5)/Trello_quora" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -478,10 +479,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.QuoraApiApplication" />
-        <item itemvalue="Gradle./Users/sambath/OneDrive/MSc/API and Backend Development/quora" />
-        <item itemvalue="JUnit.AnswerControllerTest" />
         <item itemvalue="JUnit.UserControllerTest" />
         <item itemvalue="JUnit.QuestionControllerTest" />
+        <item itemvalue="JUnit.AnswerControllerTest" />
+        <item itemvalue="Gradle./Users/sambath/OneDrive/MSc/API and Backend Development/quora" />
       </list>
     </recent_temporary>
   </component>
@@ -532,7 +533,14 @@
       <option name="project" value="LOCAL" />
       <updated>1610848957066</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Implemented editQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService">
+      <created>1610851640118</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1610851640118</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -660,7 +668,8 @@
     <MESSAGE value="Added QuestionEntity and DAO and modified QuestionController" />
     <MESSAGE value="Added QuestionEntity and DAO and modified QuestionController for the GetAllQuestions" />
     <MESSAGE value="Implemented deleteQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented deleteQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService" />
+    <MESSAGE value="Implemented editQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented editQuestions functionality through modifications on QuestionEntity/ DAO / QuestionController/QuestionBusinessService" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

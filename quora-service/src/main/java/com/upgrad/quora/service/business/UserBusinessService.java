@@ -4,7 +4,9 @@ import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,5 +88,40 @@ public class UserBusinessService {
             throw new AuthenticationFailedException("ATH-002", "Password failed");
         }
 
+    }
+    /**
+     * This method get the user details based on the access token
+     * @param accessToken access token of the user
+     * @return user details
+     * @throws AuthorizationFailedException
+     */
+    public UserAuthEntity getUserByToken(final String accessToken) throws AuthorizationFailedException {
+        UserAuthEntity userAuthByToken = userDao.getUserAuthByToken(accessToken);
+
+        if(userAuthByToken == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        if(userAuthByToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
+        }
+
+        return userAuthByToken;
+    }
+
+    /**
+     * This method returns the user details based on the UUID
+     * @param userUuid UUID of the User
+     * @return user details
+     * @throws UserNotFoundException
+     */
+    public UserEntity getUserById(final String userUuid) throws UserNotFoundException {
+        UserEntity userEntity = userDao.getUserById(userUuid);
+
+        if(userEntity == null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+        }
+
+        return userEntity;
     }
 }
