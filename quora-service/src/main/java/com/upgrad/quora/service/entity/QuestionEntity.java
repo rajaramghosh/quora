@@ -1,5 +1,8 @@
 package com.upgrad.quora.service.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -9,7 +12,10 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "question")
-
+@NamedQueries({
+        @NamedQuery(name = "getAllQuestions", query = "select q from QuestionEntity q"),
+        @NamedQuery(name = "getAllQuestionsByUser", query = "select q from QuestionEntity q where q.userId = :user_id")
+})
 public class QuestionEntity {
 
     @Id
@@ -31,9 +37,10 @@ public class QuestionEntity {
     @NotNull
     private ZonedDateTime date;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "USER_ID")
-    private UserEntity user_id;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id")
+    private UserEntity userId;
 
     public Integer getId() {
         return id;
@@ -67,11 +74,11 @@ public class QuestionEntity {
         this.date = date;
     }
 
-    public UserEntity getUser_id() {
-        return user_id;
+    public UserEntity getUserId() {
+        return userId;
     }
 
-    public void setUser_id(UserEntity user_id) {
-        this.user_id = user_id;
+    public void setUserId(UserEntity userId) {
+        this.userId = userId;
     }
 }

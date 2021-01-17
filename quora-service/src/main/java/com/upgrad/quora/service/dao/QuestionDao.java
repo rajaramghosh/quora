@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 // Class implements methods to access question table data
 
@@ -21,6 +22,12 @@ public class QuestionDao {
             return null;
         }
     }
+
+
+    public List<QuestionEntity> getAllQuestions() {
+    return entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
+    }
+
 
 
 }
