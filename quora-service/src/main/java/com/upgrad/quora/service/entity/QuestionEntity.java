@@ -10,13 +10,16 @@ import java.time.ZonedDateTime;
 
 //Entity class for managing question table
 
+//Named queries for each requirement to read data from QuestionEntity is defined below
+
 @Entity
 @Table(name = "question")
 @NamedQueries({
         @NamedQuery(name = "getAllQuestions", query = "select q from QuestionEntity q"),
         @NamedQuery(name = "getAllQuestionsByUser", query = "select q from QuestionEntity q where q.userId = :user_id"),
         @NamedQuery(name = "deleteQuestionById", query = "delete QuestionEntity q where q.uuid = :uuid"),
-        @NamedQuery(name = "editQuestionById", query = "update QuestionEntity q set q.content = :content where q.uuid = :uuid")
+        @NamedQuery(name = "editQuestionById", query = "update QuestionEntity q set q.content = :content where q.uuid = :uuid"),
+        @NamedQuery(name = "getQuestionById", query = "select q from QuestionEntity q where q.uuid = :uuid")
 })
 public class QuestionEntity {
 
@@ -43,6 +46,9 @@ public class QuestionEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
     private UserEntity userId;
+
+
+    //Getter and Setter methods for the attributes
 
     public Integer getId() {
         return id;

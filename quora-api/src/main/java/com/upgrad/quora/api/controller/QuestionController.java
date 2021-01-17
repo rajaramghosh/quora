@@ -8,6 +8,7 @@ import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.InvalidQuestionException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,11 +35,11 @@ public class QuestionController
     @Autowired
     private QuestionDao questionDao;
 
-    //Method to create questions in the application and uses POST request method
+    //Method to create questions in the application and uses RequestMethod.POST
     @RequestMapping(method = RequestMethod.POST, path = "/question/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
 
-       UserAuthEntity user = userBusinessService.getUserByToken(authorization);
+        UserAuthEntity user = userBusinessService.getUserByToken(authorization);
         final QuestionEntity questionEntity = new QuestionEntity();
 
         questionEntity.setUuid(UUID.randomUUID().toString());
@@ -48,48 +49,50 @@ public class QuestionController
         final QuestionEntity createdQuestionEntity = questionBusinessService.create(questionEntity);
         QuestionResponse questionResponse = new QuestionResponse().id(createdQuestionEntity.getUuid()).status("QUESTION CREATED");
         return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.CREATED);
-
-        //return new ResponseEntity<QuestionResponse>(HttpStatus.OK);
     }
 
-    //Method to view all questions in the application and uses GET request method
+    //Method to view all question based on the request from the API and uses RequestMethod.GET
     @RequestMapping(method = RequestMethod.GET, path = "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization)  {
-        System.out.println("Inside controller all");
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException  {
+        UserAuthEntity user = userBusinessService.getUserByToken(authorization);
 
         List<QuestionEntity> questionEntities= questionBusinessService.getAllQuestions(authorization);
         return getListResponseEntity(questionEntities);
     }
-
+    //Method to Delete question based on the request from the API and uses RequestMethod.DELETE
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String accessToken,@PathVariable("questionId") final String questionId)  {
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String authorization,@PathVariable("questionId") final String questionId) throws AuthorizationFailedException, InvalidQuestionException   {
 
-        questionBusinessService.deleteQuestion(questionId, accessToken);
+        questionBusinessService.deleteQuestion(questionId, authorization);
         QuestionDeleteResponse response = new QuestionDeleteResponse().id(questionId).status("QUESTION DELETED");
 
         return new ResponseEntity<QuestionDeleteResponse>(response, HttpStatus.OK);
     }
-    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionEditResponse> editQuestion(@RequestHeader("authorization") final String accessToken, @PathVariable("questionId") final String questionId,final QuestionEditRequest questionEditRequest)  {
 
-        questionBusinessService.editQuestion(questionId, questionEditRequest.getContent(), accessToken);
+    //Method to Edit question based on the request from the API and uses RequestMethod.PUT
+    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestionContent(@RequestHeader("authorization") final String authorization, @PathVariable("questionId") final String questionId,final QuestionEditRequest questionEditRequest) throws AuthorizationFailedException, InvalidQuestionException {
+
+        questionBusinessService.editQuestion(questionId, questionEditRequest.getContent(), authorization);
         QuestionEditResponse response = new QuestionEditResponse().id(questionId).status("QUESTION EDITED");
 
         return new ResponseEntity<QuestionEditResponse>(response, HttpStatus.OK);
     }
 
+    //Method to Get question based on the request from the API for specific userid and uses RequestMethod.GET
     @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}")
-    public ResponseEntity<List<QuestionDetailsResponse>> getQuestionsByUser(@RequestHeader("authorization") final String accessToken, @PathVariable("userId") final String userId ) throws AuthorizationFailedException, UserNotFoundException {
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@RequestHeader("authorization") final String authorization, @PathVariable("userId") final String userId ) throws AuthorizationFailedException, UserNotFoundException {
 
         UserEntity userEntity = userBusinessService.getUserById(userId);
-        userBusinessService.getUserByToken(accessToken);
+        userBusinessService.getUserByToken(authorization);
 
-        List<QuestionEntity> allQuestions = questionBusinessService.getAllQuestionsByUser(userEntity);
+        List<QuestionEntity> allQuestions = questionBusinessService.getAllQuestionsByUser(userEntity, authorization);
 
         return getListResponseEntity(allQuestions);
 
     }
 
+    // Method reads the list of questionentity through loop.
     private ResponseEntity<List<QuestionDetailsResponse>> getListResponseEntity(List<QuestionEntity> allQuestions) {
         List<QuestionDetailsResponse> questionDetailsResponses=new ArrayList<>();
         for (QuestionEntity questionEntity : allQuestions) {
