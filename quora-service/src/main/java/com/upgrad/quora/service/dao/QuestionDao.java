@@ -22,7 +22,15 @@ public class QuestionDao {
             return null;
         }
     }
-
+    public void deleteQuestion(final String uuid) {
+        try {
+            entityManager.createNamedQuery("deleteQuestionById")
+                    .setParameter("uuid", uuid)
+                    .executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     public List<QuestionEntity> getAllQuestions() {
     return entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();

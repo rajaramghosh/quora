@@ -1,9 +1,7 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
-import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.QuestionEntity;
-import com.upgrad.quora.service.entity.UserAuthEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +14,7 @@ public class QuestionBusinessService {
     private QuestionDao questionDao;
 
     @Autowired
-    private UserDao userDao;
+    private UserBusinessService userBusinessService;
 
     @Transactional //(propagation = Propagation.REQUIRED)
     public QuestionEntity create(QuestionEntity questionEntity)  {
@@ -26,15 +24,14 @@ public class QuestionBusinessService {
         return createQuestion;
     }
 
+    @Transactional //(propagation = Propagation.REQUIRED)
+    public void deleteQuestion(final String uuid,final String authorization)  {
+        questionDao.deleteQuestion(uuid);
+    }
 
     public List<QuestionEntity> getAllQuestions(final String authorization) {
-        System.out.println("Inside QBS getAllQuestionsByUser");
-
-        UserAuthEntity user = userDao.getUserAuthByToken(authorization);
 
         return questionDao.getAllQuestions();
-
-        //return getAllQuestion;
     }
 
 

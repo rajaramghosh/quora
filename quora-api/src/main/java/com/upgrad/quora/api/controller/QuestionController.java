@@ -67,4 +67,14 @@ public class QuestionController
        return new ResponseEntity<List<QuestionDetailsResponse>>(questionDetailsResponses, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.DELETE, path = "/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String accessToken,@PathVariable("questionId") final String questionId)  {
+
+        questionBusinessService.deleteQuestion(questionId, accessToken);
+        QuestionDeleteResponse response = new QuestionDeleteResponse().id(questionId).status("QUESTION DELETED");
+
+        return new ResponseEntity<QuestionDeleteResponse>(response, HttpStatus.OK);
+    }
+
+
 }
