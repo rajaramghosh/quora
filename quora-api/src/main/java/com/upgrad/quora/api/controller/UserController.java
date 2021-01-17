@@ -1,12 +1,14 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.SigninResponse;
+import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -101,5 +103,28 @@ public class UserController {
         headers.add("access_token", authEntity.getAccessToken());
 
         return new ResponseEntity<SigninResponse>(signinResponse, headers, HttpStatus.OK );
+    }
+
+    /**
+     * The "/user/signout" endpoint is used to sign out from the Quora Application. The user cannot access any other
+     * endpoint once he is signed out of the application.
+     * It should be a POST request. This endpoint must request the access token of the signed in user in the
+     * authorization field of the Request Header.
+     * If the access token provided by the user does not exist in the database, throw 'SignOutRestrictedException' with
+     * the message code -'SGR-001' and message - 'User is not Signed in'.
+     * If the access token provided by the user is valid, update the LogoutAt time of the user in the database and
+     * return the 'uuid' of the signed out user from 'users' table and message 'SIGNED OUT SUCCESSFULLY' in the JSON
+     * response with the corresponding HTTP status.
+     * @param accessToken access token of the user
+     * @return appropriate message based on the state of the user
+     * @throws SignOutRestrictedException
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "signout")
+    public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String accessToken) throws SignOutRestrictedException {
+
+        String signedOutUser = userBusinessService.signout(accessToken);
+        SignoutResponse signoutResponse = new SignoutResponse().id(signedOutUser).message("SIGNED OUT SUCCESSFULLY");
+
+        return new ResponseEntity<SignoutResponse>(signoutResponse, HttpStatus.OK);
     }
 }

@@ -3,10 +3,7 @@ package com.upgrad.quora.service.business;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
-import com.upgrad.quora.service.exception.AuthenticationFailedException;
-import com.upgrad.quora.service.exception.AuthorizationFailedException;
-import com.upgrad.quora.service.exception.SignUpRestrictedException;
-import com.upgrad.quora.service.exception.UserNotFoundException;
+import com.upgrad.quora.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +86,43 @@ public class UserBusinessService {
         }
 
     }
+
+    /**
+     * This method sign out a user if already signed in or respond with appropriate message
+     * @param accessToken of the logged in user
+     * @return message based on the user state
+     * @throws SignOutRestrictedException
+     */
+    @Transactional
+    public String signout(final String accessToken) throws SignOutRestrictedException {
+        ZonedDateTime currentTime = ZonedDateTime.now();
+        UserAuthEntity userAuthEntity = userDao.getUserAuthByToken(accessToken);
+
+        if(userAuthEntity == null) {
+            throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
+        }
+
+        userDao.updateUserLogoutByToken(accessToken, currentTime);
+
+        return userAuthEntity.getUserId().getUuid();
+    }
+
+    /**
+     * This method user details based on the UUID and Access Token
+     * @param userUuid UUID of the User
+     * @param accessToken Access Token of the User
+     * @return User Details
+     * @throws AuthorizationFailedException
+     * @throws UserNotFoundException
+     */
+    public UserEntity getUserProfile(final String userUuid, final String accessToken) throws AuthorizationFailedException, UserNotFoundException {
+
+        getUserByToken(accessToken);
+        UserEntity userById = getUserById(userUuid);
+
+        return userById;
+    }
+
     /**
      * This method get the user details based on the access token
      * @param accessToken access token of the user

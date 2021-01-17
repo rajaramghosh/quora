@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.time.ZonedDateTime;
 
 /**
  * This class implements methods to access the database
@@ -81,6 +82,12 @@ public class UserDao {
         return userAuthEntity;
     }
 
+    /**
+     * This method get the user details based on the access token
+     * @param accessToken access toke of the user
+     * @return null if not found or else the user details
+     */
+
     public UserAuthEntity getUserAuthByToken(final String accessToken) {
         try {
             UserAuthEntity authEntity = entityManager.createNamedQuery("userAuthByToken", UserAuthEntity.class)
@@ -91,6 +98,18 @@ public class UserDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    /**
+     * The method Update the user_auth table when the on successful sign out
+     * @param accessToken access token of the user
+     * @param logoutAt sign out time
+     */
+    public void updateUserLogoutByToken(final String accessToken, final ZonedDateTime logoutAt) {
+        entityManager.createNamedQuery("updateLogoutByToken" )
+                .setParameter("token", accessToken)
+                .setParameter("logoutAt", logoutAt)
+                .executeUpdate();
     }
 
     /**
