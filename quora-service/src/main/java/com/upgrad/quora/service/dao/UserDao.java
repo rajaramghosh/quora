@@ -87,6 +87,7 @@ public class UserDao {
      * @param accessToken access toke of the user
      * @return null if not found or else the user details
      */
+
     public UserAuthEntity getUserAuthByToken(final String accessToken) {
         try {
             UserAuthEntity authEntity = entityManager.createNamedQuery("userAuthByToken", UserAuthEntity.class)
