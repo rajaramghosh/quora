@@ -28,6 +28,11 @@ public class QuestionBusinessService {
     public void deleteQuestion(final String uuid,final String authorization)  {
         questionDao.deleteQuestion(uuid);
     }
+    @Transactional
+    public String editQuestion(final String uuid, final String questionContent,final String accessToken) {
+        questionDao.editQuestion(uuid, questionContent);
+        return uuid;
+    }
 
     public List<QuestionEntity> getAllQuestions(final String authorization) {
 

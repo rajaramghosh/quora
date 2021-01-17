@@ -75,6 +75,13 @@ public class QuestionController
 
         return new ResponseEntity<QuestionDeleteResponse>(response, HttpStatus.OK);
     }
+    @RequestMapping(method = RequestMethod.PUT, path = "/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestion(@RequestHeader("authorization") final String accessToken, @PathVariable("questionId") final String questionId,final QuestionEditRequest questionEditRequest)  {
 
+        questionBusinessService.editQuestion(questionId, questionEditRequest.getContent(), accessToken);
+        QuestionEditResponse response = new QuestionEditResponse().id(questionId).status("QUESTION EDITED");
+
+        return new ResponseEntity<QuestionEditResponse>(response, HttpStatus.OK);
+    }
 
 }

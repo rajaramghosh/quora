@@ -32,6 +32,17 @@ public class QuestionDao {
         }
     }
 
+    public void editQuestion(String uuid, String content) {
+        try {
+            entityManager.createNamedQuery("editQuestionById")
+                    .setParameter("uuid", uuid)
+                    .setParameter("content", content)
+                    .executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public List<QuestionEntity> getAllQuestions() {
     return entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
     }
