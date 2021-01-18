@@ -6,14 +6,15 @@ import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
-import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Business Service to handle logic for the answers to questions.
@@ -75,5 +76,44 @@ public class AnswerBusinessService {
         return answerDao.createAnswerForQuestion(answerEntity);
     }
 
+    /**
+     * This method is a business service method to get all answers for a particular question.
+     *
+     * Method checks for the user authentication and the logged in status and throws appropriate errors if validation fails.
+     * Method also checks for the validity of the question uuid passed and throws corresponding exceptions if validation fails.
+     *
+     * @param questionUuid
+     * @param token
+     * @return List of Answer Entity object for the answers for a particular question
+     * @throws AuthorizationFailedException
+     * @throws InvalidQuestionException
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<AnswerEntity> getAllAnswerForQuestion(String questionUuid, String token) throws AuthorizationFailedException, InvalidQuestionException {
+
+        //Check if the user is currently logged in and has a valid access token
+        UserAuthEntity userAuth = userDao.getUserAuthByToken(token);
+        if (userAuth == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        //Check if the user has been logged out.
+        if (userAuth.getLogoutAt() != null && userAuth.getLogoutAt().isAfter(userAuth.getLoginAt())) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get the answers");
+        }
+
+        //Check if the question uuid passed is valid.
+        QuestionEntity questionEntity = questionDao.getQuestionById(questionUuid);
+        if (questionEntity == null) {
+            throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
+        }
+
+        // call to Dao to get all the answers for the question
+        List<AnswerEntity> answers = answerDao.getAllAnswerByQuestionUuid(questionEntity);
+
+        //return the list of answers.
+        return answers;
+
+    }
 
 }
