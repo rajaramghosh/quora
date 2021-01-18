@@ -165,4 +165,45 @@ public class AnswerBusinessService {
 
     }
 
+    /**
+     * This method is a business service method to get all answers for a particular question.
+     *
+     * Method checks for the user authentication and the logged in status and throws appropriate errors if validation fails.
+     * Method also checks for the validity of the answer uuid passed and throws corresponding exceptions if validation fails.
+     * Method also checks if the owner of the answer is deleting the answer and throws authorization exception as appropriate.
+     *
+     * @param ansUuid
+     * @param token
+     * @return AnswerEntity
+     * @throws AuthorizationFailedException
+     * @throws AnswerNotFoundException
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity deleteAnswer(String ansUuid, String token) throws AuthorizationFailedException, AnswerNotFoundException {
+
+        //Check if the user is currently logged in and has a valid access token
+        UserAuthEntity userAuth = userDao.getUserAuthByToken(token);
+        if (userAuth == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        //Check if the user has been logged out.
+        if (userAuth.getLogoutAt() != null && userAuth.getLogoutAt().isAfter(userAuth.getLoginAt())) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete the answer");
+        }
+
+        //Check if the answer uuid passed is valid.
+        AnswerEntity answerEntity = answerDao.getAnswerByUuid(ansUuid);
+        if (answerEntity == null) {
+            throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
+        }
+
+        //Check if the owner of the answer or admin is deleting the answer content.
+        if (!answerEntity.getUser().getUuid().equals(userAuth.getUserId().getUuid())) {
+            throw new AuthorizationFailedException("ATHR-003", "Only the answer owner or admin can delete the answer");
+        }
+        return answerDao.deleteAnswer(answerEntity);
+
+    }
+
 }
