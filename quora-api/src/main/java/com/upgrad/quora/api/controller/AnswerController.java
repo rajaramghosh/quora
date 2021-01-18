@@ -1,16 +1,13 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.AnswerDetailsResponse;
-import com.upgrad.quora.api.model.AnswerEditResponse;
-import com.upgrad.quora.api.model.AnswerRequest;
-import com.upgrad.quora.api.model.AnswerResponse;
+import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerBusinessService;
 import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
+import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
-import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -169,6 +166,47 @@ public class AnswerController {
 
         //create the answer edit response.
         AnswerEditResponse answerRsp = new AnswerEditResponse().id(ansUuid).status("ANSWER EDITED");
+
+        return new ResponseEntity<>(answerRsp, HttpStatus.OK);
+
+    }
+
+    /**
+     * This is a DELETE request endpoint, /answer/delete/{answerId}, that is used to delete an answer.
+     *
+     * This endpoint requests for the path variable 'answerId' as a string for the corresponding answer which is to be
+     * deleted from the database and access token of the signed in user as a string in authorization Request Header.
+     *
+     * If the access token provided by the user does not exist in the database throw "AuthorizationFailedException"
+     * with the message code - 'ATHR-001' and message - 'User has not signed in'.
+     *
+     * If the user has signed out, throw "AuthorizationFailedException" with the message code - 'ATHR-002'
+     * and message - 'User is signed out.Sign in first to delete an answer'.
+     *
+     * Only the answer owner or admin can delete the answer. Therefore, if the user who is not the owner of the answer
+     * or the role of the user is ‘nonadmin’ and tries to delete the answer throw "AuthorizationFailedException"
+     * with the message code - 'ATHR-003' and message - 'Only the answer owner or admin can delete the answer'.
+     *
+     * If the answer with uuid which is to be deleted does not exist in the database, throw "AnswerNotFoundException"
+     * with the message code - 'ANS-001' and message - 'Entered answer uuid does not exist'.
+     *
+     * Else, delete the answer from the database and return "uuid" of the deleted answer and message "ANSWER DELETED"
+     * in the JSON response with the corresponding HTTP status.
+     *
+     * @param authorization
+     * @param ansUuid
+     * @return AnswerDeleteResponse
+     * @throws AuthorizationFailedException
+     * @throws AnswerNotFoundException
+     */
+    @RequestMapping(path = "/answer/delete/{answerId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerDeleteResponse> deleteAnswer(@RequestHeader("authorization") final String authorization, @PathVariable("answerId") final String ansUuid) throws AuthorizationFailedException, AnswerNotFoundException {
+
+        // business service call to delete the answer uuid passed from the front end.
+        AnswerEntity ansEntity = ansService.deleteAnswer(ansUuid, authorization);
+
+        // build the answer delete response
+        AnswerDeleteResponse answerRsp = new AnswerDeleteResponse().id(ansEntity.getUuid()).status("ANSWER DELETED");
 
         return new ResponseEntity<>(answerRsp, HttpStatus.OK);
 

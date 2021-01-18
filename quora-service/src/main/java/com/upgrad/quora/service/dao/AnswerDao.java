@@ -73,4 +73,16 @@ public class AnswerDao {
 
         return entityManager.merge(answerEntity);
     }
+
+    /**
+     * DAO method to delete a particular answer.
+     *
+     * @param answerEntity
+     * @return answerEntity
+     */
+    public AnswerEntity deleteAnswer(AnswerEntity answerEntity) {
+
+        entityManager.remove(answerEntity);
+        return answerEntity;
+    }
 }
