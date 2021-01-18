@@ -36,7 +36,7 @@ public class AnswerDao {
     /**
      * DAO method to get all answers to a question.
      *
-     * @param uuid
+     * @param question
      * @return
      */
     public List<AnswerEntity> getAllAnswerByQuestionUuid(QuestionEntity question) {
@@ -48,4 +48,29 @@ public class AnswerDao {
         }
     }
 
+    /**
+     * DAO method to get an answer by answer uuid
+     *
+     * @param uuid
+     * @return answer entity
+     */
+    public AnswerEntity getAnswerByUuid(String uuid) {
+
+        try {
+            return entityManager.createNamedQuery("getAnswerByUuid", AnswerEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * DAO method to update and existing answer.
+     *
+     * @param answerEntity
+     * @return modified answer entity
+     */
+    public AnswerEntity editAnswer(AnswerEntity answerEntity) {
+
+        return entityManager.merge(answerEntity);
+    }
 }
