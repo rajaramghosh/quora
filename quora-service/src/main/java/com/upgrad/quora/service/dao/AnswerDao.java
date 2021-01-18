@@ -1,10 +1,13 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 
 /**
@@ -28,6 +31,21 @@ public class AnswerDao {
 
         entityManager.persist(answerEntity);
         return answerEntity;
+    }
+
+    /**
+     * DAO method to get all answers to a question.
+     *
+     * @param uuid
+     * @return
+     */
+    public List<AnswerEntity> getAllAnswerByQuestionUuid(QuestionEntity question) {
+
+        try {
+            return entityManager.createNamedQuery("getAllAnswerByQuestionUuid").setParameter("uuid", question).getResultList();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 
 }
