@@ -158,4 +158,32 @@ public class UserBusinessService {
 
         return userEntity;
     }
+
+    /**
+     * Check if the user is signed in
+     * @param userAuthTokenEntity user authentication token
+     * @return true or false
+     */
+    public boolean isUserSignedIn(UserAuthEntity userAuthTokenEntity) {
+        boolean isUserSignedIn = false;
+        if (userAuthTokenEntity != null && userAuthTokenEntity.getLoginAt() != null && userAuthTokenEntity.getExpiresAt() != null) {
+            if ((userAuthTokenEntity.getLogoutAt() == null)) {
+                isUserSignedIn = true;
+            }
+        }
+        return isUserSignedIn;
+    }
+
+    /**
+     * Check if the user is an admin user
+     * @param user user details
+     * @return true or false
+     */
+    public boolean isUserAdmin(UserEntity user) {
+        boolean isUserAdmin = false;
+        if (user != null && "admin".equals(user.getRole())) {
+            isUserAdmin = true;
+        }
+        return isUserAdmin;
+    }
 }
