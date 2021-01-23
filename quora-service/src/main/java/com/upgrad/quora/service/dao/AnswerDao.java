@@ -1,88 +1,71 @@
 package com.upgrad.quora.service.dao;
 
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.QuestionEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
-
 /**
- * DAO class to handle persistence of answer related jobs into the DB .
- *
- * @author saikatnandi
+ * This class implements methods to access the database
  */
-
 @Repository
 public class AnswerDao {
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    EntityManager entityManager;
 
     /**
-     * DAO method to persist the new answer to a particular question
-     * @param answerEntity
-     * @return saved answerEntity
+     * This method create an answer
+     * @param answerEntity answer details
+     * @return answer details
      */
-    public AnswerEntity createAnswerForQuestion(AnswerEntity answerEntity) {
-
-        entityManager.persist(answerEntity);
+    public AnswerEntity createAnswer(AnswerEntity answerEntity) {
+        this.entityManager.persist(answerEntity);
         return answerEntity;
     }
 
     /**
-     * DAO method to get all answers to a question.
-     *
-     * @param question
-     * @return
+     * This method update the answer
+     * @param answerEntity answer details
+     * @return answer details
      */
-    public List<AnswerEntity> getAllAnswerByQuestionUuid(QuestionEntity question) {
-
-        try {
-            return entityManager.createNamedQuery("getAllAnswerByQuestionUuid").setParameter("uuid", question).getResultList();
-        } catch (NoResultException ex) {
-            return null;
-        }
-    }
-
-    /**
-     * DAO method to get an answer by answer uuid
-     *
-     * @param uuid
-     * @return answer entity
-     */
-    public AnswerEntity getAnswerByUuid(String uuid) {
-
-        try {
-            return entityManager.createNamedQuery("getAnswerByUuid", AnswerEntity.class).setParameter("uuid", uuid).getSingleResult();
-        } catch (NoResultException ex) {
-            return null;
-        }
-    }
-
-    /**
-     * DAO method to update and existing answer.
-     *
-     * @param answerEntity
-     * @return modified answer entity
-     */
-    public AnswerEntity editAnswer(AnswerEntity answerEntity) {
-
+    public AnswerEntity updateAnswer(AnswerEntity answerEntity) {
         return entityManager.merge(answerEntity);
     }
 
     /**
-     * DAO method to delete a particular answer.
-     *
-     * @param answerEntity
-     * @return answerEntity
+     * This method deletes the answer
+     * @param answerEntity answer details
      */
-    public AnswerEntity deleteAnswer(AnswerEntity answerEntity) {
-
+    public void deleteAnswer(AnswerEntity answerEntity) {
         entityManager.remove(answerEntity);
-        return answerEntity;
+    }
+
+    /**
+     * This method get all the answers for a question
+     * @param id id
+     * @return list of answers
+     */
+    public List<AnswerEntity> getAllAnswersToQuestion(int id) {
+        try {
+            return this.entityManager.createNamedQuery("getAnswersForQuestionId", AnswerEntity.class).setParameter("uuid", id).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * This method retrieves the answer
+     * @param uuid uuid
+     * @return answer details
+     */
+    public AnswerEntity getAnswerForAnswerId(String uuid) {
+        try {
+            return this.entityManager.createNamedQuery("getAnswerForAnswerId", AnswerEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 }

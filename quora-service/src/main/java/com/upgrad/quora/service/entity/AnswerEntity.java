@@ -1,95 +1,107 @@
 package com.upgrad.quora.service.entity;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
-/**
- * Entity class for the answer table in the DB.
- * @author saikatnandi
- */
 @Entity
-@Table(name = "answer")
-@NamedQueries(
-        {
-                @NamedQuery(name = "getAnswerByUuid", query = "select u from AnswerEntity u where u.uuid=:uuid"),
-                @NamedQuery(name = "getAllAnswerByQuestionUuid", query = "select a from AnswerEntity a where a.question=:uuid")
-
-        }
-)
+@Table(name = "answer", schema = "public")
+@NamedQueries({
+        @NamedQuery(name = "getAllAnswers", query = "select q from AnswerEntity q"),
+        @NamedQuery(name = "getAnswersForQuestionId", query = "select q from AnswerEntity q where q.question.id = :uuid"),
+        @NamedQuery(name = "getAnswersByUserId", query = "select q from AnswerEntity q where q.uuid = :uuid"),
+        @NamedQuery(name = "getAnswerForAnswerId", query = "select q from AnswerEntity q where q.uuid = :uuid")
+})
 public class AnswerEntity implements Serializable {
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "uuid")
+    @NotNull
     @Size(max = 200)
     private String uuid;
 
     @Column(name = "ans")
+    @NotNull
     @Size(max = 255)
     private String answer;
 
     @Column(name = "date")
-    private LocalDateTime date;
+    @NotNull
+    private ZonedDateTime date;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private QuestionEntity question;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    public AnswerEntity() {
+    }
+
     public Integer getId() {
-        return id;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public QuestionEntity getQuestion() {
-        return question;
+        return this.id;
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
+    public String getUuid() {
+        return this.uuid;
+    }
+
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getAnswer() {
+        return this.answer;
     }
 
     public void setAnswer(String answer) {
         this.answer = answer;
     }
 
-    public void setDate(LocalDateTime date) {
+    public ZonedDateTime getDate() {
+        return this.date;
+    }
+
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public QuestionEntity getQuestion() {
+        return this.question;
     }
 
     public void setQuestion(QuestionEntity question) {
         this.question = question;
     }
 
+    public UserEntity getUser() {
+        return this.user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public int hashCode() {
+        return (new HashCodeBuilder()).append(this).hashCode();
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }
